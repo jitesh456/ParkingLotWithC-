@@ -11,13 +11,13 @@ namespace RepositoryLayer
     using Microsoft.Extensions.Configuration;
     using ParkingLotModelLayer;
 
-    public class ParkingLotRepository : IParkingLotRepository
+    public class ParkingRepository : IParkingRepository
     {
         private readonly string connectionString;
 
         public IConfiguration Configuration { get; }
         
-        public ParkingLotRepository(IConfiguration configuration)
+        public ParkingRepository(IConfiguration configuration)
         {
             Configuration = configuration;
             connectionString = Configuration.GetSection("DBConnection").GetSection("ConnectionString").Value;
@@ -39,14 +39,10 @@ namespace RepositoryLayer
                     ParkingLot parkingLot = new ParkingLot();
                     parkingLot.Id = Convert.ToInt32(reader["Id"]);
                     parkingLot.VehicleNumber = reader["VehicleNumber"].ToString();
-                    parkingLot.EntryTime = Convert.ToDateTime(reader["EntryTime"]);
                     parkingLot.ParkingType = Convert.ToInt32(reader["ParkingType"]);
                     parkingLot.DriverType = Convert.ToInt32(reader["DriverType"]);
-                    parkingLot.VehicleType = Convert.ToInt32(reader["VehicleType"]);
-                    parkingLot.Disable = Convert.ToBoolean(reader["Disable"]);
-                    parkingLot.ExitTime = Convert.ToDateTime(reader["ExitTime"]);
-                    parkingLot.SlotNumber = Convert.ToInt32(reader["SlotNumber"]);
-                    parkingLot.ModifiedTime = Convert.ToDateTime(reader["ModifiedTime"]);
+                    parkingLot.VehicleType = Convert.ToInt32(reader["VehicleType"]);                                        
+                    parkingLot.SlotNumber = Convert.ToInt32(reader["SlotNumber"]);                    
                     lstParkingLot.Add(parkingLot);
                 }
             }
@@ -61,16 +57,18 @@ namespace RepositoryLayer
             return lstParkingLot;
         }
 
-        public IEnumerable<ParkingLot> searchParkingData(string SearchField)
+        public IEnumerable<ParkingLot> searchParkingData(string vehicleNumber)
         {
             List<ParkingLot> lstParkingLot = new List<ParkingLot>();
             SqlConnection con = null;
             try
             {
                 con = new SqlConnection(connectionString);
-                SqlCommand cmd = new SqlCommand("spSearchVehicle", con);
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("SearchField", SearchField);
+                SqlCommand cmd = new SqlCommand("spSearchVehicle", con)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+                cmd.Parameters.AddWithValue("@VehicleNumber", vehicleNumber);
                 con.Open();
                 SqlDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -78,14 +76,10 @@ namespace RepositoryLayer
                     ParkingLot parkingLot = new ParkingLot();
                     parkingLot.Id = Convert.ToInt32(rdr["Id"]);
                     parkingLot.VehicleNumber = rdr["VehicleNumber"].ToString();
-                    parkingLot.EntryTime = Convert.ToDateTime(rdr["EntryTime"]);
                     parkingLot.ParkingType = Convert.ToInt32(rdr["ParkingType"]);
                     parkingLot.DriverType = Convert.ToInt32(rdr["DriverType"]);
-                    parkingLot.VehicleType = Convert.ToInt32(rdr["VehicleType"]);
-                    parkingLot.Disable = Convert.ToBoolean(rdr["Disable"]);
-                    parkingLot.ExitTime = Convert.ToDateTime(rdr["ExitTime"]);
+                    parkingLot.VehicleType = Convert.ToInt32(rdr["VehicleType"]);                    
                     parkingLot.SlotNumber = Convert.ToInt32(rdr["SlotNumber"]);
-                    parkingLot.ModifiedTime = Convert.ToDateTime(rdr["ModifiedTime"]);
                     lstParkingLot.Add(parkingLot);
                 }
                 con.Close();
@@ -97,7 +91,41 @@ namespace RepositoryLayer
             return lstParkingLot;
         }
 
-        public Boolean Unpark(string vehicleNumber,DateTime modifiedTime )
+        public IEnumerable<ParkingLot> searchParkingDataBySlotNumber(int slotNumber)
+        {
+            List<ParkingLot> lstParkingLot = new List<ParkingLot>();
+            SqlConnection con = null;
+            try
+            {
+                con = new SqlConnection(connectionString);
+                SqlCommand cmd = new SqlCommand("spSearchVehicleBySlotNumber", con)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+                cmd.Parameters.AddWithValue("@SlotNumber",slotNumber);
+                con.Open();
+                SqlDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    ParkingLot parkingLot = new ParkingLot();
+                    parkingLot.Id = Convert.ToInt32(rdr["Id"]);
+                    parkingLot.VehicleNumber = rdr["VehicleNumber"].ToString();
+                    parkingLot.ParkingType = Convert.ToInt32(rdr["ParkingType"]);
+                    parkingLot.DriverType = Convert.ToInt32(rdr["DriverType"]);
+                    parkingLot.VehicleType = Convert.ToInt32(rdr["VehicleType"]);
+                    parkingLot.SlotNumber = Convert.ToInt32(rdr["SlotNumber"]);
+                    lstParkingLot.Add(parkingLot);
+                }
+                con.Close();
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            return lstParkingLot;
+        }
+
+        public Boolean Unpark(string vehicleNumber)
         {
             List<ParkingLot> lstParkingLot = new List<ParkingLot>();
             SqlConnection con = null;
@@ -105,16 +133,17 @@ namespace RepositoryLayer
             try
             {
                 con = new SqlConnection(connectionString);
-                SqlCommand cmd = new SqlCommand("spUnPark", con);
+                SqlCommand cmd = new SqlCommand("spUnpark", con);
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@VehicleNumber", vehicleNumber);
-                cmd.Parameters.AddWithValue("@ModiFiedTime", modifiedTime);
                 con.Open();
+                
                 int result=cmd.ExecuteNonQuery();
-                if (result > 1)
+                if (result > 0)
                 {
                     return true;
                 }
+
             }
             catch (Exception e)
             {
@@ -130,25 +159,23 @@ namespace RepositoryLayer
 
         public Boolean Park(ParkingLot parkingLot)
         {
-            List<ParkingLot> lstParkingLot = new List<ParkingLot>();
+            
             SqlConnection con = null;
             try
             {
                 con = new SqlConnection(connectionString);
-                SqlCommand cmd = new SqlCommand("spUnPark", con);
+                SqlCommand cmd = new SqlCommand("spPark", con);
+                cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@VehicleNumber", parkingLot.VehicleNumber);
-                cmd.Parameters.AddWithValue("@EntryTime", parkingLot.EntryTime);
                 cmd.Parameters.AddWithValue("@ParkingType", parkingLot.ParkingType);
                 cmd.Parameters.AddWithValue("@VehicleType", parkingLot.VehicleType);
                 cmd.Parameters.AddWithValue("@DriverType", parkingLot.DriverType);
-                cmd.Parameters.AddWithValue("@Disable", parkingLot.Disable);
-                cmd.Parameters.AddWithValue("@ExitTime", parkingLot.ExitTime);
                 cmd.Parameters.AddWithValue("@SlotNumber", parkingLot.SlotNumber);
-                cmd.Parameters.AddWithValue("@ModifiedTime", parkingLot.ModifiedTime);
                 con.Open();
                 
                 int result=cmd.ExecuteNonQuery();
-                if (result > 1)
+
+                if (result > 0)
                 {
                     return true;
                 }

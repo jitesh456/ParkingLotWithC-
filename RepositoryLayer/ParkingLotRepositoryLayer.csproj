@@ -44,8 +44,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IParkingLotRepository.cs" />
-    <Compile Include="ParkingLotRepository.cs" />
+    <Compile Include="IParkingRepository.cs" />
+    <Compile Include="ParkingRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ParkingLotModelLayer\ParkingLotModelLayer.csproj">

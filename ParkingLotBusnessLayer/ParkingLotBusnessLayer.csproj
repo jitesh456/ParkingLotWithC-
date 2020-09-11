@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IParking.cs" />
     <Compile Include="Parking.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -49,9 +50,9 @@
       <Project>{d6cdf761-6b38-481b-8db2-db8bf800fbfa}</Project>
       <Name>ParkingLotModelLayer</Name>
     </ProjectReference>
-    <ProjectReference Include="..\RepositoryLayer\RepositoryLayer.csproj">
+    <ProjectReference Include="..\RepositoryLayer\ParkingLotRepositoryLayer.csproj">
       <Project>{be01ab1f-92b0-4df7-a5b6-1ce537a6d82a}</Project>
-      <Name>RepositoryLayer</Name>
+      <Name>ParkingLotRepositoryLayer</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

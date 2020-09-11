@@ -6,35 +6,22 @@
     using System.Text;
     using System.Threading.Tasks;
     using RepositoryLayer;
-    using ParkingLotModelLayer.Dto;
     using ParkingLotModelLayer;
-
-
-    public class Parking
+    
+    public class Parking : IParking
     {
-        private readonly DateTime currentTime;
-        private readonly IParkingLotRepository parkingLotRepository;
+        
+        private readonly IParkingRepository parkingLotRepository;
 
-        public Parking(IParkingLotRepository parkingLotRepository)
+        public Parking(IParkingRepository parkingLotRepository)
         {
             this.parkingLotRepository = parkingLotRepository;
-            currentTime = default(DateTime);
         }
 
-        public Boolean Park(ParkingLotDto parkingLotDto)
+        public Boolean Park(ParkingLot parkingLot)
         {
             try
             {
-                ParkingLot parkingLot = new ParkingLot();
-                parkingLot.VehicleNumber = parkingLotDto.VehicleNumber;
-                parkingLot.VehicleType = parkingLotDto.VehicleType;
-                parkingLot.DriverType = parkingLotDto.DriverType;
-                parkingLot.ParkingType = parkingLotDto.ParkingType;
-                parkingLot.Disable = false;
-                parkingLot.EntryTime = currentTime;
-                parkingLot.ExitTime = default(DateTime);
-                parkingLot.SlotNumber = 10;
-                parkingLot.ModifiedTime = currentTime;
                 return parkingLotRepository.Park(parkingLot);
             }
             catch (Exception e)
@@ -47,7 +34,7 @@
         {
             try
             {
-                return parkingLotRepository.Unpark(vehicleNumber,currentTime);
+                return parkingLotRepository.Unpark(vehicleNumber);
             }
             catch (Exception e)
             {
@@ -72,6 +59,18 @@
             try
             {
                 return parkingLotRepository.searchParkingData(searchField);
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        public IEnumerable<ParkingLot> SearchVehicleSlotNumber(int slotNumber)
+        {
+            try
+            {
+                return parkingLotRepository.searchParkingDataBySlotNumber(slotNumber);
             }
             catch (Exception e)
             {

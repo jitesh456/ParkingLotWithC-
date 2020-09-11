@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.1209
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParkingLotSystem", "ParkingLotSystem\ParkingLotSystem.csproj", "{94FC3E41-55F0-4E3A-96C7-298A4391940D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ParkingLotSystem", "ParkingLotSystem\ParkingLotSystem.csproj", "{94FC3E41-55F0-4E3A-96C7-298A4391940D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepositoryLayer", "RepositoryLayer\RepositoryLayer.csproj", "{BE01AB1F-92B0-4DF7-A5B6-1CE537A6D82A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParkingLotRepositoryLayer", "RepositoryLayer\ParkingLotRepositoryLayer.csproj", "{BE01AB1F-92B0-4DF7-A5B6-1CE537A6D82A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParkingLotModelLayer", "ParkingLotModelLayer\ParkingLotModelLayer.csproj", "{D6CDF761-6B38-481B-8DB2-DB8BF800FBFA}"
 EndProject

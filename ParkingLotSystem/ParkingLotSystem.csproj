@@ -11,12 +11,14 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.9" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.5.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\ParkingLotBusnessLayer\ParkingLotBusnessLayer.csproj" />
     <ProjectReference Include="..\ParkingLotModelLayer\ParkingLotModelLayer.csproj" />
-    <ProjectReference Include="..\RepositoryLayer\RepositoryLayer.csproj" />
+    <ProjectReference Include="..\RepositoryLayer\ParkingLotRepositoryLayer.csproj" />
   </ItemGroup>
 
 </Project>

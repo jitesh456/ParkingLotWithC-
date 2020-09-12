@@ -50,6 +50,7 @@
   <ItemGroup>
     <Compile Include="ParkingLot.cs" />
     <Compile Include="Response.cs" />
+    <Compile Include="SlotInformation.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

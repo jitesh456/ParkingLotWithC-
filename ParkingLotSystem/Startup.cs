@@ -31,6 +31,8 @@ namespace ParkingLotSystem
             services.AddSingleton(Configuration);
             services.AddTransient<IParkingRepository, ParkingRepository>();
             services.AddTransient<IParking, Parking>();
+            services.AddTransient<IOwnerRepository, OwnerRepository>();
+            services.AddTransient<IOwnerService,OwnerService>();
             services.AddSwaggerGen();
         }
 

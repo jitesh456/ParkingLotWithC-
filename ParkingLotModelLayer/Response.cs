@@ -12,6 +12,5 @@ namespace ParkingLotModelLayer
         public HttpStatusCode StateCode { get; set; }
         public string Message { get; set; }
         public object Data { get; set; }
-
     }
 }

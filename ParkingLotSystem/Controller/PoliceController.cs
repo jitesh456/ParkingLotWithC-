@@ -14,10 +14,10 @@ namespace ParkingLotSystem
     public class PoliceController : Controller
     {
         private readonly IParking parking;
-
-        public PoliceController(IParking parking)
+        private readonly IMessagingService messagingService;
+        public PoliceController(IParking parking,IMessagingService messagingService)
         {
-
+            this.messagingService = messagingService;
             this.parking = parking;
         }
 
@@ -38,9 +38,7 @@ namespace ParkingLotSystem
             catch (Exception e)
             {
                 return this.BadRequest(new Response() { StateCode = HttpStatusCode.BadRequest, Message = e.Message, Data = null, });
-
             }
-
         }
 
 
@@ -52,6 +50,8 @@ namespace ParkingLotSystem
                 Boolean result = parking.Park(parkingLot);
                 if (result)
                 {
+                    this.messagingService.Send("Police parked at slot no:" + parkingLot.SlotNumber);
+                    this.messagingService.Receive();
                     return this.Ok(new Response() { StateCode = HttpStatusCode.OK, Message = "Vehicle Parked", Data = null, });
                 }
                 return this.NotFound(new Response() { StateCode = HttpStatusCode.NotFound, Message = "Vehicle failed to Parked", Data = null, });
@@ -71,6 +71,8 @@ namespace ParkingLotSystem
                 Boolean result = parking.Unpark(vehicleNumber);
                 if (result)
                 {
+                    this.messagingService.Send("Police with vehicle no:" + vehicleNumber + " Unparked ");
+                    this.messagingService.Receive();
                     return this.Ok(new Response() { StateCode = HttpStatusCode.OK, Message = "Vehicle UnParked", Data = null, });
                 }
                 return this.NotFound(new Response() { StateCode = HttpStatusCode.NotFound, Message = "Vehicle Not found", Data = null, });

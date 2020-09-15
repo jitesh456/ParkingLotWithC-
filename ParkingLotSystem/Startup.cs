@@ -33,6 +33,7 @@ namespace ParkingLotSystem
             services.AddTransient<IParking, Parking>();
             services.AddTransient<IOwnerRepository, OwnerRepository>();
             services.AddTransient<IOwnerService,OwnerService>();
+            services.AddTransient<IMessagingService,MessagingService>();
             services.AddSwaggerGen();
         }
 

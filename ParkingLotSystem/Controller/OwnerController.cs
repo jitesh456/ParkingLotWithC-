@@ -8,18 +8,20 @@ using ParkingLotModelLayer;
 using System.Net;
 
 
-
 namespace ParkingLotSystem
 {
     [Route("api/[controller]")]
-    public class DriverController : Controller
+    public class OwnerController : Controller
     {
         private readonly IParking parking;
+        private readonly IMessagingService messagingService;
+        private readonly IOwnerService ownerService;
 
-        public DriverController(IParking parking)
+        public OwnerController(IParking parking,IOwnerService ownerService,IMessagingService messagingService)
         {
-
+            this.messagingService = messagingService;
             this.parking = parking;
+            this.ownerService = ownerService;
         }
 
 
@@ -40,9 +42,7 @@ namespace ParkingLotSystem
             catch (Exception e)
             {
                 return this.BadRequest(new Response() { StateCode = HttpStatusCode.BadRequest, Message = e.Message, Data = null, });
-
             }
-
         }
 
 
@@ -51,6 +51,9 @@ namespace ParkingLotSystem
         {
             try
             {
+                this.messagingService.Send("Owner parked at slot no:" + parkingLot.SlotNumber);
+                this.messagingService.Receive();
+
                 Boolean result = parking.Park(parkingLot);
                 if (result)
                 {
@@ -73,6 +76,8 @@ namespace ParkingLotSystem
                 Boolean result = parking.Unpark(vehicleNumber);
                 if (result)
                 {
+                    this.messagingService.Send("Owner with vehicle no:" + vehicleNumber + " Unparked ");
+                    this.messagingService.Receive();
                     return this.Ok(new Response() { StateCode = HttpStatusCode.OK, Message = "Vehicle UnParked", Data = null, });
                 }
                 return this.NotFound(new Response() { StateCode = HttpStatusCode.NotFound, Message = "Vehicle Not found", Data = null, });
@@ -113,6 +118,24 @@ namespace ParkingLotSystem
                     return this.Ok(new Response() { StateCode = HttpStatusCode.OK, Message = "Vehicle Info", Data = parkingData, });
                 }
                 return this.NotFound(new Response() { StateCode = HttpStatusCode.NotFound, Message = "Vehicle Not found", Data = parkingData, });
+            }
+            catch (Exception e)
+            {
+                return this.BadRequest(new Response() { StateCode = HttpStatusCode.BadRequest, Message = e.Message, Data = null, });
+            }
+        }
+
+        [HttpGet("emptyParkingSlot")]
+        public ActionResult<IEnumerable<SlotInformation>> GetEmptySlotNumber()
+        {
+            try
+            {
+                IEnumerable<SlotInformation> emptySlotList = ownerService.GetEmptySlotNumber();
+                if (emptySlotList.Count() > 0)
+                {
+                    return this.Ok(new Response() { StateCode = HttpStatusCode.OK, Message = "Empty Parking Slot List", Data = emptySlotList, });
+                }
+                return this.NotFound(new Response() { StateCode = HttpStatusCode.NotFound, Message = " Not Record Found", Data = emptySlotList, });
             }
             catch (Exception e)
             {

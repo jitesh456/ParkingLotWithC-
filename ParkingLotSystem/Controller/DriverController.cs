@@ -3,23 +3,25 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using ParkingLotModelLayer;
 using ParkingLotBusnessLayer;
+using ParkingLotModelLayer;
 using System.Net;
+
+
 
 namespace ParkingLotSystem
 {
     [Route("api/[controller]")]
-    public class SecurityController : Controller
+    public class DriverController : Controller
     {
         private readonly IParking parking;
+        private readonly IMessagingService messagingService;
 
-        public SecurityController(IParking parking)
+        public DriverController(IParking parking,IMessagingService messagingService)
         {
-
+            this.messagingService = messagingService;
             this.parking = parking;
         }
-
 
         // GET: api/<controller>
         [HttpGet("parking")]
@@ -40,7 +42,6 @@ namespace ParkingLotSystem
                 return this.BadRequest(new Response() { StateCode = HttpStatusCode.BadRequest, Message = e.Message, Data = null, });
 
             }
-
         }
 
 
@@ -52,6 +53,8 @@ namespace ParkingLotSystem
                 Boolean result = parking.Park(parkingLot);
                 if (result)
                 {
+                    this.messagingService.Send("Driver parked at slot no:" + parkingLot.SlotNumber);
+                    this.messagingService.Receive();
                     return this.Ok(new Response() { StateCode = HttpStatusCode.OK, Message = "Vehicle Parked", Data = null, });
                 }
                 return this.NotFound(new Response() { StateCode = HttpStatusCode.NotFound, Message = "Vehicle failed to Parked", Data = null, });
@@ -71,6 +74,8 @@ namespace ParkingLotSystem
                 Boolean result = parking.Unpark(vehicleNumber);
                 if (result)
                 {
+                    this.messagingService.Send("Driver with vehicle no :" + vehicleNumber + " Unparked ");
+                    this.messagingService.Receive();
                     return this.Ok(new Response() { StateCode = HttpStatusCode.OK, Message = "Vehicle UnParked", Data = null, });
                 }
                 return this.NotFound(new Response() { StateCode = HttpStatusCode.NotFound, Message = "Vehicle Not found", Data = null, });
@@ -80,7 +85,6 @@ namespace ParkingLotSystem
                 return this.BadRequest(new Response() { StateCode = HttpStatusCode.BadRequest, Message = e.Message, Data = null, });
             }
         }
-
 
         [HttpGet("search/{slotNumber:int}")]
         public ActionResult<IEnumerable<ParkingLot>> SeachVehicleBySlotNumber(int slotNumber)

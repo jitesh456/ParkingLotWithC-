@@ -31,8 +31,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Experimental.System.Messaging, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Experimental.System.Messaging.1.1.0\lib\netstandard2.0\Experimental.System.Messaging.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Messaging" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -41,10 +45,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IOwnerService.cs" />
-    <Compile Include="IParking.cs" />
-    <Compile Include="OwnerService.cs" />
-    <Compile Include="Parking.cs" />
+    <Compile Include="Interface\IMessagingService.cs" />
+    <Compile Include="Implementation\MessagingService.cs" />
+    <Compile Include="Interface\IOwnerService.cs" />
+    <Compile Include="Interface\IParking.cs" />
+    <Compile Include="Implementation\OwnerService.cs" />
+    <Compile Include="Implementation\Parking.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -57,5 +63,9 @@
       <Name>ParkingLotRepositoryLayer</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

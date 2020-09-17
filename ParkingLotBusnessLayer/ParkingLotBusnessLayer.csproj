@@ -34,8 +34,18 @@
     <Reference Include="Experimental.System.Messaging, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Experimental.System.Messaging.1.1.0\lib\netstandard2.0\Experimental.System.Messaging.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Extensions.Configuration.Abstractions, Version=2.1.1.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.extensions.configuration.abstractions\2.1.1\lib\netstandard2.0\Microsoft.Extensions.Configuration.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Tokens">
+      <HintPath>..\..\..\..\..\..\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.identitymodel.tokens\5.2.0\lib\netstandard1.4\Microsoft.IdentityModel.Tokens.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.IdentityModel.Tokens.Jwt">
+      <HintPath>..\..\..\..\..\..\Program Files\dotnet\sdk\NuGetFallbackFolder\system.identitymodel.tokens.jwt\5.2.0\lib\netstandard1.4\System.IdentityModel.Tokens.Jwt.dll</HintPath>
+    </Reference>
     <Reference Include="System.Messaging" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -45,8 +55,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Implementation\UserService.cs" />
     <Compile Include="Interface\IMessagingService.cs" />
     <Compile Include="Implementation\MessagingService.cs" />
+    <Compile Include="Interface\IUserService.cs" />
     <Compile Include="Interface\IOwnerService.cs" />
     <Compile Include="Interface\IParking.cs" />
     <Compile Include="Implementation\OwnerService.cs" />

@@ -12,6 +12,14 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RepositoryLayer;
 using ParkingLotBusnessLayer;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Net.Http.Headers;
+using Microsoft.OpenApi.Models;
+using RepositoryLayer.Interface;
+using RepositoryLayer.Implementation;
+using ParkingLotBusnessLayer.Implementation;
+using ParkingLotBusnessLayer.Interface;
 
 namespace ParkingLotSystem
 {
@@ -34,7 +42,25 @@ namespace ParkingLotSystem
             services.AddTransient<IOwnerRepository, OwnerRepository>();
             services.AddTransient<IOwnerService,OwnerService>();
             services.AddTransient<IMessagingService,MessagingService>();
+            services.AddTransient<IUserRepository, UserRepository>();
+            services.AddTransient<IUserService, UserService>();
             services.AddSwaggerGen();
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                  .AddJwtBearer(options =>
+                  {
+                      options.TokenValidationParameters = new TokenValidationParameters
+                      {
+                          ValidateIssuer = true,
+                          ValidateAudience = true,
+                          ValidateLifetime = true,
+                          ValidateIssuerSigningKey = true,
+                          ValidIssuer = Configuration["Jwt:Issuer"],
+                          ValidAudience = Configuration["Jwt:Issuer"],
+                          IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
+                      };
+                  });
+            services.AddMvc();
+            services.AddAuthorization();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -58,6 +84,7 @@ namespace ParkingLotSystem
             });
             app.UseSwagger();
             app.UseHttpsRedirection();
+            app.UseAuthentication();
             app.UseMvc();
         }
     }

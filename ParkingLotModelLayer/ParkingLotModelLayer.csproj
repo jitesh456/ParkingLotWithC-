@@ -54,6 +54,8 @@
     <Compile Include="ParkingLot.cs" />
     <Compile Include="Response.cs" />
     <Compile Include="SlotInformation.cs" />
+    <Compile Include="User.cs" />
+    <Compile Include="UserDetails.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

@@ -44,10 +44,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Implementation\UserRepository.cs" />
     <Compile Include="Interface\IOwnerRepository.cs" />
     <Compile Include="Interface\IParkingRepository.cs" />
     <Compile Include="Implementation\OwnerRepository.cs" />
     <Compile Include="Implementation\ParkingRepository.cs" />
+    <Compile Include="Interface\IUserRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ParkingLotModelLayer\ParkingLotModelLayer.csproj">

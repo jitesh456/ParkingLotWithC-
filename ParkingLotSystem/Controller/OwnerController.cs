@@ -6,12 +6,13 @@ using Microsoft.AspNetCore.Mvc;
 using ParkingLotBusnessLayer;
 using ParkingLotModelLayer;
 using System.Net;
-
+using Microsoft.AspNetCore.Authorization;
 
 namespace ParkingLotSystem
 {
     [Route("api/[controller]")]
-    public class OwnerController : Controller
+  
+    public class OwnerController : ControllerBase
     {
         private readonly IParking parking;
         private readonly IMessagingService messagingService;
@@ -26,7 +27,8 @@ namespace ParkingLotSystem
 
 
         // GET: api/<controller>
-        [HttpGet("parking")]
+        [Authorize(Roles ="Owner")]
+        [HttpGet("parking")]        
         public ActionResult<IEnumerable<ParkingLot>> GetAllParking()
         {
 
@@ -45,7 +47,7 @@ namespace ParkingLotSystem
             }
         }
 
-
+        [Authorize(Roles ="Owner")]
         [HttpPost("park")]
         public ActionResult<Boolean> ParkVehicle([FromBody] ParkingLot parkingLot)
         {
@@ -67,7 +69,7 @@ namespace ParkingLotSystem
             }
         }
 
-
+        [Authorize(Roles ="Owner")]
         [HttpPut("unpark")]
         public ActionResult<Boolean> UnPark(string vehicleNumber)
         {
@@ -88,7 +90,7 @@ namespace ParkingLotSystem
             }
         }
 
-
+        [Authorize(Roles ="Owner")]
         [HttpGet("search/{slotNumber:int}")]
         public ActionResult<IEnumerable<ParkingLot>> SeachVehicleBySlotNumber(int slotNumber)
         {
@@ -97,7 +99,7 @@ namespace ParkingLotSystem
                 IEnumerable<ParkingLot> parkingData = parking.SearchVehicleSlotNumber(slotNumber);
                 if (parkingData.Count() > 0)
                 {
-                    return this.Ok(new Response() { StateCode = HttpStatusCode.OK, Message = "Vehicle Info", Data = parkingData, });
+                    return this.Ok(new Response() { StateCode = HttpStatusCode.OK, Message = "Vehicle found at Slot number:" + slotNumber, Data = parkingData, });
                 }
                 return this.NotFound(new Response() { StateCode = HttpStatusCode.NotFound, Message = "Vehicle Not found", Data = null, });
             }
@@ -107,6 +109,7 @@ namespace ParkingLotSystem
             }
         }
 
+        [Authorize(Roles ="Owner")]
         [HttpGet("search/{VehicleNumber}")]
         public ActionResult<IEnumerable<ParkingLot>> SeachVehicleByVehicleNumber(string vehicleNumber)
         {
@@ -115,7 +118,7 @@ namespace ParkingLotSystem
                 IEnumerable<ParkingLot> parkingData = parking.SearchVehicle(vehicleNumber);
                 if (parkingData.Count() > 0)
                 {
-                    return this.Ok(new Response() { StateCode = HttpStatusCode.OK, Message = "Vehicle Info", Data = parkingData, });
+                    return this.Ok(new Response() { StateCode = HttpStatusCode.OK, Message = "Vehicle no " + vehicleNumber + " found", Data = parkingData, });
                 }
                 return this.NotFound(new Response() { StateCode = HttpStatusCode.NotFound, Message = "Vehicle Not found", Data = parkingData, });
             }
@@ -125,6 +128,7 @@ namespace ParkingLotSystem
             }
         }
 
+        [Authorize(Roles="Owner")]
         [HttpGet("emptyParkingSlot")]
         public ActionResult<IEnumerable<SlotInformation>> GetEmptySlotNumber()
         {

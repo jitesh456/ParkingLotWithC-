@@ -7,21 +7,28 @@
     using System.Threading.Tasks;
     using RepositoryLayer;
     using ParkingLotModelLayer;
-    
+    using Microsoft.Extensions.Caching.Distributed;
+    using Newtonsoft.Json;
+
     public class Parking : IParking
     {
-        
         private readonly IParkingRepository parkingLotRepository;
+        private readonly IDistributedCache distributedCache;
 
-        public Parking(IParkingRepository parkingLotRepository)
+        public Parking(IParkingRepository parkingLotRepository,IDistributedCache distributedCache)
         {
             this.parkingLotRepository = parkingLotRepository;
+            this.distributedCache = distributedCache;
         }
 
         public Boolean Park(ParkingLot parkingLot)
         {
             try
             {
+                if (distributedCache.GetString("ParkingData") != null)
+                {
+                    distributedCache.Remove("ParkingData");
+                }
                 return parkingLotRepository.Park(parkingLot);
             }
             catch (Exception e)
@@ -34,6 +41,10 @@
         {
             try
             {
+                if (distributedCache.GetString("ParkingData") != null)
+                {
+                    distributedCache.Remove("ParkingData");
+                }
                 return parkingLotRepository.Unpark(vehicleNumber);
             }
             catch (Exception e)
@@ -46,7 +57,16 @@
         {
             try
             {
-                return parkingLotRepository.GetAllParkingData();
+                IEnumerable<ParkingLot> parkingList = null;
+                if (distributedCache.GetString("ParkingData") == null)
+                {
+                    parkingList = parkingLotRepository.GetAllParkingData();
+                    distributedCache.SetString("ParkingData", JsonConvert.SerializeObject(parkingList));
+                    return parkingList;
+                }
+                parkingList = JsonConvert.DeserializeObject<IEnumerable<ParkingLot>>(distributedCache.GetString("ParkingData"));
+                return parkingList ;
+
             }
             catch (Exception e)
             {
@@ -58,6 +78,19 @@
         {
             try
             {
+                List<ParkingLot> parkingList = new List<ParkingLot>();
+                if (distributedCache.GetString("ParkingData") != null)
+                {
+                    var parkingDataList = JsonConvert.DeserializeObject<IEnumerable<ParkingLot>>(distributedCache.GetString("ParkingData"));
+                    foreach (ParkingLot parkingLot in parkingDataList)
+                    {
+                        if (parkingLot.VehicleNumber.Trim().Equals(searchField))
+                        {
+                            parkingList.Add(parkingLot);
+                            return parkingList;
+                        }
+                    }
+                }                
                 return parkingLotRepository.searchParkingData(searchField);
             }
             catch (Exception e)
@@ -70,6 +103,19 @@
         {
             try
             {
+                List<ParkingLot> parkingList = new List<ParkingLot>();
+                if (distributedCache.GetString("ParkingData") != null)
+                {
+                    var parkingDataList = JsonConvert.DeserializeObject<IEnumerable<ParkingLot>>(distributedCache.GetString("ParkingData"));
+                    foreach (ParkingLot parkingLot in parkingDataList)
+                    {
+                        if (parkingLot.SlotNumber.Equals(slotNumber))
+                        {
+                            parkingList.Add(parkingLot);
+                            return parkingList;
+                        }
+                    }
+                }
                 return parkingLotRepository.searchParkingDataBySlotNumber(slotNumber);
             }
             catch (Exception e)

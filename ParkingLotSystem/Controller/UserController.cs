@@ -42,9 +42,7 @@ namespace ParkingLotSystem.Controller
             catch (Exception e)
             {
                 return this.BadRequest(new Response() { StateCode = HttpStatusCode.BadRequest, Message = e.Message, Data = null, });
-
             }
-
         }
 
         [HttpPost]
@@ -62,9 +60,7 @@ namespace ParkingLotSystem.Controller
             catch (Exception e)
             {
                 return this.BadRequest(new Response() { StateCode = HttpStatusCode.BadRequest, Message = e.Message, Data = null, });
-
             }
         }
     }
- 
 }

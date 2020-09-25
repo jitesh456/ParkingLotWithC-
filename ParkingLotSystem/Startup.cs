@@ -15,11 +15,13 @@ using ParkingLotBusnessLayer;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Net.Http.Headers;
-using Microsoft.OpenApi.Models;
 using RepositoryLayer.Interface;
 using RepositoryLayer.Implementation;
 using ParkingLotBusnessLayer.Implementation;
 using ParkingLotBusnessLayer.Interface;
+using Swashbuckle.AspNetCore.Swagger;
+using Microsoft.AspNetCore.Http;
+using System.Net;
 
 namespace ParkingLotSystem
 {
@@ -44,7 +46,29 @@ namespace ParkingLotSystem
             services.AddTransient<IMessagingService,MessagingService>();
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<IUserService, UserService>();
-            services.AddSwaggerGen();
+            services.AddSwaggerGen(options =>
+            {
+                options.SwaggerDoc("v1", new Info
+                {
+                    Version = "v1",
+                    Title = "PARKING LOT API",
+                    Description = "Parking Lot ASP.NET(CORE) Web Api's"
+                });
+                options.AddSecurityDefinition("Bearer", new ApiKeyScheme
+                {
+                    Description = "Using the jwt bearer token",
+                    Name = "Authorization",
+                    In = "header",
+                    Type = "apiKey"
+                });
+                options.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>>
+                {
+                    { "Bearer", new string[] { } }
+                });
+                var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = System.IO.Path.Combine(AppContext.BaseDirectory, xmlFile);
+                options.IncludeXmlComments(xmlPath);
+            });
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                   .AddJwtBearer(options =>
                   {
@@ -59,8 +83,11 @@ namespace ParkingLotSystem
                           IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
                       };
                   });
-            services.AddMvc();
-            services.AddAuthorization();
+            services.AddDistributedRedisCache(options => {
+                options.Configuration = "localhost:6379";
+                options.InstanceName = "";
+            });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -86,6 +113,17 @@ namespace ParkingLotSystem
             app.UseHttpsRedirection();
             app.UseAuthentication();
             app.UseMvc();
+            
+            app.Use(async (context, next) =>
+            {
+                await next.Invoke();
+
+                
+                if (context.Response.StatusCode == StatusCodes.Status403Forbidden)
+                {
+                    await context.Response.WriteAsync("You dont have right permission");
+                }
+            });
         }
     }
 }

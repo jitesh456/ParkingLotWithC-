@@ -7,10 +7,12 @@ using ParkingLotModelLayer;
 using ParkingLotBusnessLayer;
 using System.Net;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 
 namespace ParkingLotSystem
 {
     [Route("api/[controller]")]
+    [Authorize(Roles = "Security,Owner")]
     public class SecurityController : ControllerBase
     {
         private readonly IParking parking;
@@ -22,9 +24,11 @@ namespace ParkingLotSystem
             this.messagingService = messagingService;         
         }
 
-
-        [Authorize(Roles = "Security")]
+        ///<response code = "403" >Access Denied</response>
+        ///<response code = "401" >UnAuthorized</response>
         [HttpGet("parking")]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public ActionResult<IEnumerable<ParkingLot>> GetAllParking()
         {
             try
@@ -42,8 +46,11 @@ namespace ParkingLotSystem
             }
         }
 
-        [Authorize(Roles = "Security")]
+        ///<response code = "403" >Access Denied</response>
+        ///<response code = "401" >UnAuthorized</response>
         [HttpPost("park")]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public ActionResult<Boolean> ParkVehicle([FromBody] ParkingLot parkingLot)
         {
             try
@@ -63,8 +70,11 @@ namespace ParkingLotSystem
             }
         }
 
-        [Authorize(Roles = "Security")]
+        ///<response code = "401" >UnAuthorized</response>
+        ///<response code = "403" >Access Denied</response>
         [HttpPut("unpark")]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public ActionResult<Boolean> UnPark(string vehicleNumber)
         {
             try
@@ -84,8 +94,11 @@ namespace ParkingLotSystem
             }
         }
 
-        [Authorize(Roles = "Security")]
+        ///<response code = "401" >UnAuthorized</response>
+        ///<response code = "403" >Access Denied</response>
         [HttpGet("search/{slotNumber:int}")]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public ActionResult<IEnumerable<ParkingLot>> SeachVehicleBySlotNumber(int slotNumber)
         {
             try
@@ -103,8 +116,11 @@ namespace ParkingLotSystem
             }
         }
 
-        [Authorize(Roles = "Security")]
-        [HttpGet("search/{VehicleNumber}")]
+        ///<response code = "401" >UnAuthorized</response>
+        ///<response code = "403" >Access Denied</response>
+        [HttpGet("search")]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public ActionResult<IEnumerable<ParkingLot>> SeachVehicleByVehicleNumber(string vehicleNumber)
         {
             try

@@ -34,7 +34,6 @@ namespace ParkingLotBusnessLayer.Implementation
             }
             catch (Exception e)
             {
-
                 throw new Exception(e.Message);
             }
         }
